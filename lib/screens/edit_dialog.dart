@@ -1,6 +1,8 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ptf/screens/Customer.dart';
 
 
 import '../../../constants.dart';
@@ -9,24 +11,28 @@ import '../../../theme/theme.dart';
 import '../../../utils/IpInputFormatter.dart';
 import '../../../utils/http.dart';
 import 'dart:developer' as developer;
+
+import '../models/customer_page_entity.dart';
 class EditDialog extends StatefulWidget {
-  final Customer? customer;
+  final bool isCreate;
+  Customer customer;
   final _formKey = GlobalKey<FormState>();
 
-  EditDialog({Key? key, this.customer}) : super(key: key);
+  EditDialog({Key? key, required this.customer,required this.isCreate}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _EditDialog();
 }
 
 class _EditDialog extends State<EditDialog> {
-  Future<bool> addDevice() async {
+  Future<bool> addCustomer() async {
     try {
       var state = widget._formKey.currentState;
+      developer.debugger(message: "");
       if (state!.validate()) {
-        var body = Customer.empty();
-
-        HttpUtils.post("/customer/add", body);
+        setCustomer();
+        var body = widget.customer;
+        HttpUtils.post("/v1/addCustomer", jsonEncode(body));
         setState(() {
           Navigator.of(context).pop(true);
         });
@@ -42,9 +48,9 @@ class _EditDialog extends State<EditDialog> {
     try {
       var state = widget._formKey.currentState;
       if (state!.validate()) {
-        var body = Customer.empty();
-
-        var response = HttpUtils.post("/devices/update", body);
+        setCustomer();
+        var body = widget.customer;
+        var response = HttpUtils.post("/v1/updateCustomer", jsonEncode(body));
         setState(() {
           Navigator.of(context).pop(true);
         });
@@ -59,7 +65,6 @@ class _EditDialog extends State<EditDialog> {
   TextEditingController tecName = TextEditingController();
   TextEditingController tecPhone = TextEditingController();
   TextEditingController tecAddress = TextEditingController();
-  TextEditingController tecEmail = TextEditingController();
   TextEditingController tecUseTime = TextEditingController();
   TextEditingController tecEndTime = TextEditingController();
 
@@ -72,13 +77,20 @@ class _EditDialog extends State<EditDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.customer != null) {
-      // numberC.text = widget.customer?.number as String;
-      // ipC.text = widget.customer?.ip as String;
-      // versionC.text = widget.customer?.version as String;
-      // snC.text = widget.customer?.sn as String;
-      // pointC.text = widget.customer?.tag as String;
+    if (!widget.isCreate) {
+      tecName.text = widget.customer?.name as String;
+      tecPhone.text = widget.customer?.phone as String;
+      tecAddress.text = widget.customer?.address as String;
+      var useTime = DateTime.fromMillisecondsSinceEpoch(widget.customer.useTime);
+      tecUseTime.text ="${useTime.year}-${useTime.month}-${useTime.day}";
+      var endTime = DateTime.fromMillisecondsSinceEpoch(widget.customer.useTime);
+      tecEndTime.text ="${useTime.year}-${useTime.month}-${endTime.day}";
     }
+  }
+  void setCustomer(){
+    widget.customer.name =tecName.text;
+    widget.customer.phone =tecPhone.text;
+    widget.customer.address =tecAddress.text;
   }
   void _showDatePicker(bool isStart) async {
     await showDatePicker(
@@ -90,10 +102,10 @@ class _EditDialog extends State<EditDialog> {
         .then((value) {
       if (value != null) {
         if(isStart){
-          widget.customer?.use_time=value.millisecondsSinceEpoch;
+          widget.customer?.useTime=value.millisecondsSinceEpoch;
           tecUseTime.text="${value.year}-${value.month}-${value.day}";
         }else{
-          widget.customer?.end_time=value.millisecondsSinceEpoch;
+          widget.customer?.endTime=value.millisecondsSinceEpoch;
           tecEndTime.text="${value.year}-${value.month}-${value.day}";
         }
       }
@@ -104,7 +116,6 @@ class _EditDialog extends State<EditDialog> {
     tecName.dispose();
     tecPhone.dispose();
     tecAddress.dispose();
-    tecEmail.dispose();
     tecUseTime.dispose();
     tecEndTime.dispose();
     super.dispose();
@@ -170,18 +181,6 @@ class _EditDialog extends State<EditDialog> {
           Padding(
             padding: paddingAll,
             child: TextFormField(
-              controller: tecEmail,
-              decoration: InputDecoration(
-                  border: outlineInputBorder,
-                  labelText: '邮箱',
-                  // labelStyle: formTextStyle(context),
-                  // hintStyle: formTextStyle(context),
-                  hintText: '邮箱'),
-            ),
-          ),
-          Padding(
-            padding: paddingAll,
-            child: TextFormField(
               readOnly: true,
               controller: tecUseTime,
               validator: (value) {
@@ -192,7 +191,7 @@ class _EditDialog extends State<EditDialog> {
               },
               decoration: InputDecoration(
                   suffixIcon: TextButton.icon(label: const Text("选择日期"),icon: Icon(Icons.timer),onPressed: (){
-                    _showDatePicker(false);
+                    _showDatePicker(true);
                   },),
 
                   border: outlineInputBorder,
@@ -258,11 +257,11 @@ class _EditDialog extends State<EditDialog> {
             ),
           ),
           onPressed: () async {
-            if (widget.customer?.id != null && widget.customer?.id!="") {
+            if (!widget.isCreate) {
               bool isOK = await updateDevice();
               developer.log(isOK.toString());
             } else {
-              bool isOK = await addDevice();
+              bool isOK = await addCustomer();
               developer.log(isOK.toString());
             }
           },

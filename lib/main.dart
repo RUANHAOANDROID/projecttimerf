@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      theme: GirlTheme(context),
+      theme: ThemeLight(context),
       home: const MainScreen(title: "home"),
     );
   }
