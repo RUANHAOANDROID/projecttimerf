@@ -1,0 +1,46 @@
+name: ptf
+description: hao88.cloud
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  data_table_2: ^2.0.3
+  dio: ^5.1.1
+  web_socket_channel: ^2.2.0
+  json_serializable: ^6.6.2
+  fluttertoast: ^8.2.2
+  google_fonts: ^4.0.4
+
+  cupertino_icons: ^1.0.3
+  url_launcher: ^6.1.10
+  http: ^0.13.5
+  element_ui: ^0.1.3
+  flutter_svg: ^2.0.5
+  fl_chart: ^0.62.0
+  provider: ^6.0.5
+  flutter_staggered_animations: ^1.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: Regular
+      fonts:
+        - asset: fonts/SourceHanSansCN-Regular.ttf
+          style: normal
+
