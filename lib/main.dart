@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       theme: ThemeLight(context),
-      home: const MainScreen(title: "home"),
+      home: MainScreen(title: "项目试用期管理"),
     );
   }
 }

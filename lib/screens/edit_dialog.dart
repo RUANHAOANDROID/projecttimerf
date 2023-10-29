@@ -1,13 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 
 import '../../../constants.dart';
 import '../../../responsive.dart';
 import '../../../theme/theme.dart';
-import '../../../utils/IpInputFormatter.dart';
 import '../../../utils/http.dart';
 import 'dart:developer' as developer;
 
@@ -27,7 +25,7 @@ class _EditDialog extends State<EditDialog> {
   Future<bool> addCustomer() async {
     try {
       var state = widget._formKey.currentState;
-      developer.debugger(message: "");
+      // developer.debugger(message: "");
       if (state!.validate()) {
         setCustomer();
         var body = widget.customer;
@@ -97,7 +95,7 @@ class _EditDialog extends State<EditDialog> {
         initialDate: DateTime.now(),
         firstDate: DateTime(2022),
         lastDate: DateTime(2025),
-        locale: Locale("zh"))
+        locale: const Locale("zh"))
         .then((value) {
       if (value != null) {
         if(isStart){
@@ -133,7 +131,7 @@ class _EditDialog extends State<EditDialog> {
               validator: (value) {
                 return value!.trim().isNotEmpty ? null : "姓名不能为空";
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   border: outlineInputBorder,
                   // labelStyle: formTextStyle(context),
                   // hintStyle: formTextStyle(context),
@@ -151,7 +149,7 @@ class _EditDialog extends State<EditDialog> {
                 }
                 return null;
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   border: outlineInputBorder,
                   labelText: '电话',
                   // labelStyle: formTextStyle(context),
@@ -169,7 +167,7 @@ class _EditDialog extends State<EditDialog> {
                 }
                 return null;
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   border: outlineInputBorder,
                   // hintStyle: formTextStyle(context),
                   labelText: '地址',

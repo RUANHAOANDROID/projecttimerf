@@ -1,20 +1,25 @@
+import 'dart:developer';
+
 import 'package:data_table_2/data_table_2.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ptf/models/customer_page_entity.dart';
 
 import '../utils/http.dart';
 
 class CustomerPage extends StatefulWidget {
-  CustomerPage({super.key, required this.pageKey});
-  //final _key = GlobalKey<PaginatedDataTable2State>();
   GlobalKey<PaginatedDataTable2State> pageKey;
+  bool childUpdate;
+  CustomerPage({super.key, required this.pageKey,required this.childUpdate});
+  //final _key = GlobalKey<PaginatedDataTable2State>();
+
   @override
   State<StatefulWidget> createState() => _PaginatedPageState();
 }
 
 class _PaginatedPageState extends State<CustomerPage> {
-
-
+  
   int _rowsPerPage = 10;
   int _currentIndex = 0;
   CustomerPageData _pageEntity = CustomerPageData();
@@ -32,7 +37,7 @@ class _PaginatedPageState extends State<CustomerPage> {
 
   _pageChanged(int rowIndex) {
     _currentIndex = rowIndex;
-    debugPrint("_pageChanged :${rowIndex}");
+    debugPrint("_pageChanged :$rowIndex");
     _getCustomers();
   }
 
@@ -48,6 +53,7 @@ class _PaginatedPageState extends State<CustomerPage> {
   @override
   void initState() {
     _getCustomers();
+    log("initState");
     super.initState();
   }
 
@@ -59,12 +65,16 @@ class _PaginatedPageState extends State<CustomerPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    SourceData _sourceData = SourceData(context,_pageEntity);
+    log("initState");
+    if(widget.childUpdate){
+      _refresh();
+      widget.childUpdate =false;
+    }
+    SourceData sourceData = SourceData(context,_pageEntity,_refresh);
 
     var paginatedDataTable = PaginatedDataTable2(
       key: widget.pageKey,
-      source: _sourceData,
+      source: sourceData,
       // header: Text('事件'),
       headingRowHeight: 50.0,
       dataRowHeight: 60.0,
@@ -79,7 +89,7 @@ class _PaginatedPageState extends State<CustomerPage> {
         _rowsPerPage = value!;
       },
       sortAscending: true,
-      columns: [
+      columns: const [
         DataColumn2(
           label: Text("姓名"),
         ),
@@ -87,6 +97,7 @@ class _PaginatedPageState extends State<CustomerPage> {
             label: Text("电话")),
         DataColumn2(label: Text("地址")),
         DataColumn2(label: Text('到期时间')),
+        DataColumn2(label: Text('操作')),
       ],
       empty: const Center(child: Text('暂无数据')),
       showFirstLastButtons: true,
@@ -104,15 +115,18 @@ class _PaginatedPageState extends State<CustomerPage> {
 class SourceData extends DataTableSource {
   final CustomerPageData pageEntity;
   final BuildContext context;
-
-  SourceData(this.context,this.pageEntity);
+  final Function refresh; // 定义一个回调函数
+  SourceData(this.context,this.pageEntity, this.refresh);
 
   final int _selectCount = 0; //当前选中的行数
 
+  @override
   bool get isRowCountApproximate => false;
 
+  @override
   int get rowCount => pageEntity.count; //总行数
 
+  @override
   int get selectedRowCount => _selectCount; //选中的行数
 
   //数据排序
@@ -146,12 +160,24 @@ class SourceData extends DataTableSource {
       print(e);
     }
     if (item == null) return null;
-
+    var useTime = DateTime.fromMillisecondsSinceEpoch(item.endTime);
     return DataRow(cells: [
       DataCell(Text("${item?.name}"), placeholder: true),
       DataCell(Text("${item?.phone}"), placeholder: true),
       DataCell(Text("${item?.address}"), placeholder: true),
-      DataCell(Text("${item?.endTime}"), placeholder: true)
+      DataCell(Text("${useTime.year}-${useTime.month}-${useTime.day}"), placeholder: true),
+      DataCell(Row(children: [
+        IconButton(onPressed: (){
+
+        }, icon: const Icon(Icons.edit)),
+        IconButton(onPressed: (){
+        deleteCustomer(item!.id);
+        }, icon: const Icon(Icons.delete)),
+      ],), placeholder: true)
     ]);
+  }
+  void deleteCustomer(int id)async{
+     var response =await HttpUtils.get("/v1/deleteCustomer?id=$id",null);
+     refresh();
   }
 }

@@ -8,9 +8,11 @@ import 'package:ptf/screens/customer_page.dart';
 import '../constants.dart';
 import '../models/customer_page_entity.dart';
 import 'edit_dialog.dart';
+import 'dart:developer';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key, required this.title});
+  bool childUpdate= false;
+  MainScreen({super.key, required this.title});
   final String title;
 
   @override
@@ -21,12 +23,16 @@ class _MyHomePageState extends State<MainScreen> {
   final _key = GlobalKey<PaginatedDataTable2State>();
   onRefresh() {
     setState(() {
+      log("on refresh");
       _key.currentState?.pageTo(0);
+      widget.childUpdate=true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    log("on build");
+    var customerPage = CustomerPage(pageKey: _key,childUpdate: widget.childUpdate);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -36,7 +42,7 @@ class _MyHomePageState extends State<MainScreen> {
             SizedBox(
             height: window.physicalSize.height*1,
                 width: double.infinity,
-                child:CustomerPage(pageKey: _key,)),
+                child:customerPage),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){

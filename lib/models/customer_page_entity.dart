@@ -40,7 +40,7 @@ class CustomerPageData {
 
 @JsonSerializable()
 class Customer {
-	int? id = 0;
+	int id = 0;
 	String? name = '';
 	String? phone = '';
 	String? address = '';
