@@ -5,22 +5,24 @@ import 'package:ptf/models/customer_page_entity.dart';
 import '../utils/http.dart';
 
 class CustomerPage extends StatefulWidget {
-  CustomerPage({super.key});
-
+  CustomerPage({super.key, required this.pageKey});
+  //final _key = GlobalKey<PaginatedDataTable2State>();
+  GlobalKey<PaginatedDataTable2State> pageKey;
   @override
   State<StatefulWidget> createState() => _PaginatedPageState();
 }
 
 class _PaginatedPageState extends State<CustomerPage> {
-  final _key = GlobalKey<PaginatedDataTable2State>();
+
+
   int _rowsPerPage = 10;
   int _currentIndex = 0;
   CustomerPageData _pageEntity = CustomerPageData();
 
   //下一页
   _getCustomers({int rowIndex = 0}) async {
-    var json =
-        await HttpUtils.get("/v1/customers?offset=${rowIndex}&limit=${_rowsPerPage}","");
+    var body = '{"offset":$rowIndex,"limit":$_rowsPerPage}';
+    var json = await HttpUtils.post("/v1/customers",body);
     var entity = CustomerPageEntity.fromJson(json);
 
     setState(() {
@@ -40,7 +42,7 @@ class _PaginatedPageState extends State<CustomerPage> {
       _getCustomers();
       return;
     }
-    _key.currentState?.pageTo(0);
+    widget.pageKey.currentState?.pageTo(0);
   }
 
   @override
@@ -58,11 +60,10 @@ class _PaginatedPageState extends State<CustomerPage> {
   @override
   Widget build(BuildContext context) {
 
-
     SourceData _sourceData = SourceData(context,_pageEntity);
 
     var paginatedDataTable = PaginatedDataTable2(
-      key: _key,
+      key: widget.pageKey,
       source: _sourceData,
       // header: Text('事件'),
       headingRowHeight: 50.0,

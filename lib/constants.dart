@@ -15,7 +15,7 @@ const ICBC_URL = 'http://localhost:9090';
 const EMCS_URL = 'http://localhost:9090';
 
 //const BASE_URL = "https://gateflow.hao88.cloud";
-const BASE_URL = "http://127.0.0.1:8888";
+const BASE_URL = "http://localhost:8888";
 //const WS_URL = 'ws://gateflow.hao88.cloud/ws/flow';
 const WS_URL = 'ws://127.0.0.1:8888/ws/flow';
 const CONNECT_TIMEOUT = Duration(seconds: 5000);

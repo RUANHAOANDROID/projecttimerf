@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:data_table_2/data_table_2.dart';
@@ -19,38 +18,15 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MainScreen> {
-  List<Customer> customers =List.empty(growable: true);
+  final _key = GlobalKey<PaginatedDataTable2State>();
   onRefresh() {
-
+    setState(() {
+      _key.currentState?.pageTo(0);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    var tabTitles = DataTable2(
-              columnSpacing: defaultPadding,
-              columns: const [
-                DataColumn(
-                  label: Text("姓名"),
-                ),
-                DataColumn(
-                  label: Text("电话"),
-                ),
-                DataColumn(
-                  label: Text("地址"),
-                ),
-                DataColumn(
-                  label: Text("到期时间"),
-                ),
-                DataColumn(
-                  label: Text("操作"),
-                ),
-              ],
-              rows: List.generate(
-               customers.length,
-                    (index) => devicesDataRow(customers[index]),
-              ),
-            );
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -60,7 +36,7 @@ class _MyHomePageState extends State<MainScreen> {
             SizedBox(
             height: window.physicalSize.height*1,
                 width: double.infinity,
-                child:CustomerPage()),
+                child:CustomerPage(pageKey: _key,)),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
@@ -83,18 +59,4 @@ class _MyHomePageState extends State<MainScreen> {
           },
         );
   }
-  DataRow devicesDataRow(Customer customer) {
-    return DataRow(
-      cells: [
-        DataCell(Text("${customer.name}"), placeholder: true),
-        DataCell(Text("${customer.phone}"), placeholder: true),
-        DataCell(Text("${customer.address}"), placeholder: true),
-        DataCell(Text("${customer.endTime}"), placeholder: true),
-        DataCell(IconButton(onPressed: (){
-          customerDialog(context,customer,false);
-        }, icon: const Icon(Icons.edit)), placeholder: true),
-      ],
-    );
-  }
-
 }
