@@ -2,18 +2,21 @@ import 'dart:developer';
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:ptf/models/customer_page_entity.dart';
 import 'package:ptf/models/response.dart';
 import 'package:ptf/net/http.dart';
 
 import '../models/customer_entity.dart';
 import '../utils/http.dart';
+import 'edit_dialog.dart';
 
 class CustomerPage extends StatefulWidget {
   GlobalKey<PaginatedDataTable2State> pageKey;
-  bool childUpdate;
+
+  bool childUpdate;//父控件根据该值改变子控件状态
+
   CustomerPage({super.key, required this.pageKey,required this.childUpdate});
+
   //final _key = GlobalKey<PaginatedDataTable2State>();
 
   @override
@@ -21,20 +24,20 @@ class CustomerPage extends StatefulWidget {
 }
 
 class _PaginatedPageState extends State<CustomerPage> {
-
   int _rowsPerPage = 10;
   int _currentIndex = 0;
   CustomerPageData _pageEntity = CustomerPageData();
-
+  void triggerRefresh(){
+      _getCustomers();
+  }
   //下一页
   _getCustomers({int rowIndex = 0}) async {
     var body = '{"offset":$rowIndex,"limit":$_rowsPerPage}';
     var response = await HttpManager.getCustomers(body);
-    var respBody =BasicResponse.fromJson(response);
-    _pageEntity =CustomerPageData.fromJson(respBody.data);
-    if (respBody.code==HttpManager.StatusSuccess){
-      setState(() {
-      });
+    var respBody = BasicResponse.fromJson(response);
+    _pageEntity = CustomerPageData.fromJson(respBody.data);
+    if (respBody.code == HttpManager.StatusSuccess) {
+      setState(() {});
     }
   }
 
@@ -44,19 +47,10 @@ class _PaginatedPageState extends State<CustomerPage> {
     _getCustomers();
   }
 
-
-  void _refresh() {
-    if (_currentIndex == 0) {
-      _getCustomers();
-      return;
-    }
-    widget.pageKey.currentState?.pageTo(0);
-  }
-
   @override
   void initState() {
     _getCustomers();
-    log("initState");
+    log("customer initState");
     super.initState();
   }
 
@@ -68,12 +62,12 @@ class _PaginatedPageState extends State<CustomerPage> {
 
   @override
   Widget build(BuildContext context) {
-    log("initState");
+    log("customer_page initState");
     if(widget.childUpdate){
-      _refresh();
+      _getCustomers();
       widget.childUpdate =false;
     }
-    SourceData sourceData = SourceData(context,_pageEntity,_refresh);
+    SourceData sourceData = SourceData(context, _pageEntity, _getCustomers);
 
     var paginatedDataTable = PaginatedDataTable2(
       key: widget.pageKey,
@@ -96,8 +90,7 @@ class _PaginatedPageState extends State<CustomerPage> {
         DataColumn2(
           label: Text("用户"),
         ),
-        DataColumn2(
-            label: Text("品牌")),
+        DataColumn2(label: Text("品牌")),
         DataColumn2(label: Text("版本")),
         DataColumn2(label: Text('到期时间')),
         DataColumn2(label: Text('备注')),
@@ -120,7 +113,7 @@ class SourceData extends DataTableSource {
   final CustomerPageData pageEntity;
   final BuildContext context;
   final Function refresh; // 定义一个回调函数
-  SourceData(this.context,this.pageEntity, this.refresh);
+  SourceData(this.context, this.pageEntity, this.refresh);
 
   final int _selectCount = 0; //当前选中的行数
 
@@ -134,7 +127,8 @@ class SourceData extends DataTableSource {
   int get selectedRowCount => _selectCount; //选中的行数
 
   //数据排序
-  void sortData<T>(Comparable<T> Function(Map<String, dynamic> map) getField, bool b) {
+  void sortData<T>(
+      Comparable<T> Function(Map<String, dynamic> map) getField, bool b) {
     // _sourceData.sort((Map<String, dynamic> map1, Map<String, dynamic> map2) {
     //   if (!b) {
     //     //两个项进行交换
@@ -164,33 +158,57 @@ class SourceData extends DataTableSource {
       print(e);
     }
     if (item == null) return null;
-    var  useTime ;
-    if(item.useTime!=0){
-       useTime = DateTime.fromMillisecondsSinceEpoch(item.endTime);
-       useTime="${useTime.year}-${useTime.month}-${useTime.day}";
-    }else{
-      useTime="已转正";
+    var useTime;
+    if (item.useTime != 0) {
+      useTime = DateTime.fromMillisecondsSinceEpoch(item.endTime);
+      useTime = "${useTime.year}-${useTime.month}-${useTime.day}";
+    } else {
+      useTime = "已转正";
     }
 
-     log("UseTime=${item.endTime}");
+    log("UseTime=${item.endTime}");
     return DataRow(cells: [
-      DataCell(Text("${item?.name}\n${item?.phone}\n${item?.address}"), placeholder: true),
+      DataCell(Text("${item?.name}\n${item?.phone}\n${item?.address}"),
+          placeholder: true),
       DataCell(Text("${item?.brand}"), placeholder: true),
       DataCell(Text("${item?.version}"), placeholder: true),
       DataCell(Text(useTime), placeholder: true),
       DataCell(Text("${item?.remark1}"), placeholder: true),
-      DataCell(Row(children: [
-        IconButton(onPressed: (){
-
-        }, icon: const Icon(Icons.edit)),
-        IconButton(onPressed: (){
-        deleteCustomer("${item?.id}");
-        }, icon: const Icon(Icons.delete)),
-      ],), placeholder: true)
+      DataCell(
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    updateCustomerDialog(context, item!, false).then((value) => refresh());
+                  },
+                  icon: const Icon(Icons.edit)),
+              IconButton(
+                  onPressed: () {
+                    deleteCustomer("${item?.id}");
+                  },
+                  icon: const Icon(Icons.delete)),
+            ],
+          ),
+          placeholder: true)
     ]);
   }
-  void deleteCustomer(String id)async{
-     var response =await HttpUtils.get("/v1/deleteCustomer?id=$id",null);
-     refresh();
+
+  void deleteCustomer(String id) async {
+    var response = await HttpUtils.get("/v1/deleteCustomer?id=$id", null);
+    refresh();
+  }
+
+  Future<bool?> updateCustomerDialog(
+      BuildContext context, Customer customer, bool isCreate) {
+    return showDialog<bool>(
+      context: context,
+      //barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return EditDialog(
+          customer: customer,
+          isCreate: isCreate,
+        );
+      },
+    );
   }
 }

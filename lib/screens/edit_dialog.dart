@@ -28,7 +28,7 @@ class _EditDialog extends State<EditDialog> {
   Future<bool> addCustomer() async {
     try {
       var state = widget._formKey.currentState;
-      // developer.debugger(message: "");
+      developer.log("addCustomer");
       if (state!.validate()) {
         setCustomer();
         var body = widget.customer;
@@ -47,6 +47,7 @@ class _EditDialog extends State<EditDialog> {
   Future<bool> updateDevice() async {
     try {
       var state = widget._formKey.currentState;
+      developer.log("updateDevice");
       if (state!.validate()) {
         setCustomer();
         var body = widget.customer;
@@ -57,7 +58,7 @@ class _EditDialog extends State<EditDialog> {
       }
       return true;
     } catch (e) {
-      developer.log("updateDevice", error: e);
+      developer.log("err", error: e);
       return false;
     }
   }
@@ -81,18 +82,27 @@ class _EditDialog extends State<EditDialog> {
 
   @override
   void initState() {
-    super.initState();
     if (!widget.isCreate) {
       tecName.text = widget.customer?.name as String;
       tecPhone.text = widget.customer?.phone as String;
       tecAddress.text = widget.customer?.address as String;
-      var useTime =
-          DateTime.fromMillisecondsSinceEpoch(widget.customer.useTime);
-      tecUseTime.text = "${useTime.year}-${useTime.month}-${useTime.day}";
-      var endTime =
-          DateTime.fromMillisecondsSinceEpoch(widget.customer.useTime);
-      tecEndTime.text = "${useTime.year}-${useTime.month}-${endTime.day}";
+      tecVersion.text = widget.customer?.version as String;
+      tecBrand.text = widget.customer?.brand as String;
+      tecRemark1.text = widget.customer?.remark1 as String;
+      tecRemark2.text = widget.customer?.remark2 as String;
+      widget.purchased = (widget.customer.purchased == 1);
+      if (widget.customer.useTime != 0) {
+        var useTime =
+            DateTime.fromMillisecondsSinceEpoch(widget.customer.useTime);
+        tecUseTime.text = "${useTime.year}-${useTime.month}-${useTime.day}";
+      }
+      if (widget.customer.endTime != 0) {
+        var endTime =
+            DateTime.fromMillisecondsSinceEpoch(widget.customer.useTime);
+        tecEndTime.text = "${endTime.year}-${endTime.month}-${endTime.day}";
+      }
     }
+    super.initState();
   }
 
   void setCustomer() {
@@ -100,15 +110,17 @@ class _EditDialog extends State<EditDialog> {
     widget.customer.phone = tecPhone.text;
     widget.customer.address = tecAddress.text;
     widget.customer.version = tecVersion.text;
-    widget.customer.brand=tecBrand.text;
-    developer.log("${widget.customer.useTime}");
-    developer.log("${widget.customer.endTime}");
-    if(tecUseTime.text.isNotEmpty){
-      widget.customer.useTime= tecUseTime.text as int;
-    }
-    if(tecEndTime.text.isNotEmpty){
-      widget.customer.endTime= tecEndTime.text as int;
-    }
+    widget.customer.brand = tecBrand.text;
+    widget.customer.remark1 = tecRemark1.text;
+    widget.customer.remark2 = tecRemark2.text;
+    widget.customer.purchased = widget.purchased ? 1 : 0;
+    developer.log("${widget.customer.useTime}-${widget.customer.endTime}");
+    // if (tecUseTime.text.isNotEmpty) {
+    //   widget.customer.useTime = tecUseTime.text.trim() as int;
+    // }
+    // if (tecEndTime.text.isNotEmpty) {
+    //   widget.customer.endTime = tecEndTime.text.trim() as int;
+    // }
   }
 
   void _showDatePicker(bool isStart) async {
@@ -144,7 +156,10 @@ class _EditDialog extends State<EditDialog> {
   @override
   Widget build(BuildContext context) {
     const paddingAll = EdgeInsets.all(defaultPadding / 2);
-    const leftRightTop = EdgeInsets.only(left: defaultPadding/2,right: defaultPadding/2,top: defaultPadding);
+    const leftRightTop = EdgeInsets.only(
+        left: defaultPadding / 2,
+        right: defaultPadding / 2,
+        top: defaultPadding);
 
     var nameWidget = Padding(
       padding: leftRightTop,
@@ -181,7 +196,10 @@ class _EditDialog extends State<EditDialog> {
     );
 
     var addressWidget = Padding(
-      padding:  EdgeInsets.only(left: defaultPadding/2,right: defaultPadding/2,top: defaultPadding/8),
+      padding: EdgeInsets.only(
+          left: defaultPadding / 2,
+          right: defaultPadding / 2,
+          top: defaultPadding / 8),
       child: TextFormField(
         controller: tecAddress,
         validator: (value) {
@@ -199,7 +217,10 @@ class _EditDialog extends State<EditDialog> {
       ),
     );
     var brandWidget = Padding(
-      padding:  EdgeInsets.only(left: defaultPadding/2,right: defaultPadding/2,top: defaultPadding),
+      padding: EdgeInsets.only(
+          left: defaultPadding / 2,
+          right: defaultPadding / 2,
+          top: defaultPadding),
       child: TextFormField(
         controller: tecBrand,
         validator: (value) {
@@ -214,7 +235,10 @@ class _EditDialog extends State<EditDialog> {
       ),
     );
     var versionWidget = Padding(
-      padding:  EdgeInsets.only(left: defaultPadding/2,right: defaultPadding/2,top: defaultPadding),
+      padding: EdgeInsets.only(
+          left: defaultPadding / 2,
+          right: defaultPadding / 2,
+          top: defaultPadding),
       child: TextFormField(
         controller: tecVersion,
         validator: (value) {
@@ -228,7 +252,6 @@ class _EditDialog extends State<EditDialog> {
             hintText: '版本'),
       ),
     );
-
 
     var remark1Widget = Padding(
       padding: paddingAll,
