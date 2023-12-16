@@ -8,7 +8,7 @@ import '../../../theme/theme.dart';
 import '../../../utils/http.dart';
 import 'dart:developer' as developer;
 
-import '../models/customer_page_entity.dart';
+import '../models/customer_entity.dart';
 
 class EditDialog extends StatefulWidget {
   final bool isCreate;

@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:data_table_2/data_table_2.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ptf/models/customer_page_entity.dart';
+import 'package:ptf/net/http.dart';
 
+import '../models/customer_entity.dart';
 import '../utils/http.dart';
 
 class CustomerPage extends StatefulWidget {
@@ -27,12 +27,14 @@ class _PaginatedPageState extends State<CustomerPage> {
   //下一页
   _getCustomers({int rowIndex = 0}) async {
     var body = '{"offset":$rowIndex,"limit":$_rowsPerPage}';
-    var json = await HttpUtils.post("/v1/customers",body);
-    var entity = CustomerPageEntity.fromJson(json);
+    var response = await HttpManager.getCustomers(body);
+    var code =response["code"];
+    if (code==HttpManager.StatusSuccess){
+      setState(() {
+        _pageEntity = response["data"];
+      });
+    }
 
-    setState(() {
-      _pageEntity = entity.data!;
-    });
   }
 
   _pageChanged(int rowIndex) {
@@ -171,12 +173,12 @@ class SourceData extends DataTableSource {
 
         }, icon: const Icon(Icons.edit)),
         IconButton(onPressed: (){
-        deleteCustomer(item!.id);
+        deleteCustomer("${item?.id}");
         }, icon: const Icon(Icons.delete)),
       ],), placeholder: true)
     ]);
   }
-  void deleteCustomer(int id)async{
+  void deleteCustomer(String id)async{
      var response =await HttpUtils.get("/v1/deleteCustomer?id=$id",null);
      refresh();
   }

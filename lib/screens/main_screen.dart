@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:ptf/screens/customer_page.dart';
 
 import '../constants.dart';
+import '../models/customer_entity.dart';
 import '../models/customer_page_entity.dart';
 import 'edit_dialog.dart';
 import 'dart:developer';
