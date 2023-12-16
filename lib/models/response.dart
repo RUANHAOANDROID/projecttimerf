@@ -1,25 +1,12 @@
-import 'dart:convert';
+class BasicResponse{
+  final int code;
+  final String msg;
+  final Map<String, dynamic> data;
 
-class Response<T> {
-  int code;
-  String msg;
-  T data;
+  BasicResponse.fromJson(
+      Map<String, dynamic> json)
+      : code = json['code'] as int,
+        msg = json['msg'],
+        data = json['data'];
 
-  Response({required this.code, required this.msg, required this.data});
-
-  factory Response.fromJson(Map<String, dynamic> json, T Function(dynamic) fromJsonT) {
-    return Response(
-      code: json['code'] as int,
-      msg: json['msg'] as String,
-      data: fromJsonT(json['data']),
-    );
-  }
-
-  Map<String, dynamic> toJson(Map<String, dynamic> Function(T) toJsonT) {
-    return {
-      'code': code,
-      'msg': msg,
-      'data': toJsonT(data),
-    };
-  }
 }

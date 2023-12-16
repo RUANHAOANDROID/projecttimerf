@@ -1,6 +1,5 @@
 import 'package:ptf/generated/json/base/json_convert_content.dart';
 import 'package:ptf/models/customer_page_entity.dart';
-
 import '../../models/customer_entity.dart';
 
 

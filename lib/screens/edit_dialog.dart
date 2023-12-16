@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 
@@ -98,6 +99,16 @@ class _EditDialog extends State<EditDialog> {
     widget.customer.name = tecName.text;
     widget.customer.phone = tecPhone.text;
     widget.customer.address = tecAddress.text;
+    widget.customer.version = tecVersion.text;
+    widget.customer.brand=tecBrand.text;
+    developer.log("${widget.customer.useTime}");
+    developer.log("${widget.customer.endTime}");
+    if(tecUseTime.text.isNotEmpty){
+      widget.customer.useTime= tecUseTime.text as int;
+    }
+    if(tecEndTime.text.isNotEmpty){
+      widget.customer.endTime= tecEndTime.text as int;
+    }
   }
 
   void _showDatePicker(bool isStart) async {

@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:ptf/models/customer_page_entity.dart';
+import 'package:ptf/models/response.dart';
 import 'package:ptf/net/http.dart';
 
 import '../models/customer_entity.dart';
@@ -19,7 +21,7 @@ class CustomerPage extends StatefulWidget {
 }
 
 class _PaginatedPageState extends State<CustomerPage> {
-  
+
   int _rowsPerPage = 10;
   int _currentIndex = 0;
   CustomerPageData _pageEntity = CustomerPageData();
@@ -28,13 +30,12 @@ class _PaginatedPageState extends State<CustomerPage> {
   _getCustomers({int rowIndex = 0}) async {
     var body = '{"offset":$rowIndex,"limit":$_rowsPerPage}';
     var response = await HttpManager.getCustomers(body);
-    var code =response["code"];
-    if (code==HttpManager.StatusSuccess){
+    var respBody =BasicResponse.fromJson(response);
+    _pageEntity =CustomerPageData.fromJson(respBody.data);
+    if (respBody.code==HttpManager.StatusSuccess){
       setState(() {
-        _pageEntity = response["data"];
       });
     }
-
   }
 
   _pageChanged(int rowIndex) {
@@ -93,12 +94,13 @@ class _PaginatedPageState extends State<CustomerPage> {
       sortAscending: true,
       columns: const [
         DataColumn2(
-          label: Text("姓名"),
+          label: Text("用户"),
         ),
         DataColumn2(
-            label: Text("电话")),
-        DataColumn2(label: Text("地址")),
+            label: Text("品牌")),
+        DataColumn2(label: Text("版本")),
         DataColumn2(label: Text('到期时间')),
+        DataColumn2(label: Text('备注')),
         DataColumn2(label: Text('操作')),
       ],
       empty: const Center(child: Text('暂无数据')),
@@ -162,12 +164,21 @@ class SourceData extends DataTableSource {
       print(e);
     }
     if (item == null) return null;
-    var useTime = DateTime.fromMillisecondsSinceEpoch(item.endTime);
+    var  useTime ;
+    if(item.useTime!=0){
+       useTime = DateTime.fromMillisecondsSinceEpoch(item.endTime);
+       useTime="${useTime.year}-${useTime.month}-${useTime.day}";
+    }else{
+      useTime="已转正";
+    }
+
+     log("UseTime=${item.endTime}");
     return DataRow(cells: [
-      DataCell(Text("${item?.name}"), placeholder: true),
-      DataCell(Text("${item?.phone}"), placeholder: true),
-      DataCell(Text("${item?.address}"), placeholder: true),
-      DataCell(Text("${useTime.year}-${useTime.month}-${useTime.day}"), placeholder: true),
+      DataCell(Text("${item?.name}\n${item?.phone}\n${item?.address}"), placeholder: true),
+      DataCell(Text("${item?.brand}"), placeholder: true),
+      DataCell(Text("${item?.version}"), placeholder: true),
+      DataCell(Text(useTime), placeholder: true),
+      DataCell(Text("${item?.remark1}"), placeholder: true),
       DataCell(Row(children: [
         IconButton(onPressed: (){
 
