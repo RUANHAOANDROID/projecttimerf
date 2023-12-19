@@ -27,29 +27,29 @@ class _PaginatedPageState extends State<CustomerPage> {
   int _rowsPerPage = 10;
   int _currentIndex = 0;
   CustomerPageData _pageEntity = CustomerPageData();
-  void triggerRefresh(){
-      _getCustomers();
-  }
+
   //下一页
-  _getCustomers({int rowIndex = 0}) async {
+  getCustomers({int rowIndex = 0}) async {
+    log("getCustomers ------");
     var body = '{"offset":$rowIndex,"limit":$_rowsPerPage}';
     var response = await HttpManager.getCustomers(body);
     var respBody = BasicResponse.fromJson(response);
-    _pageEntity = CustomerPageData.fromJson(respBody.data);
     if (respBody.code == HttpManager.StatusSuccess) {
-      setState(() {});
+      setState(() {
+        _pageEntity = CustomerPageData.fromJson(respBody.data);
+      });
     }
   }
 
   _pageChanged(int rowIndex) {
     _currentIndex = rowIndex;
     debugPrint("_pageChanged :$rowIndex");
-    _getCustomers();
+    getCustomers();
   }
 
   @override
   void initState() {
-    _getCustomers();
+    getCustomers();
     log("customer initState");
     super.initState();
   }
@@ -64,10 +64,10 @@ class _PaginatedPageState extends State<CustomerPage> {
   Widget build(BuildContext context) {
     log("customer_page initState");
     if(widget.childUpdate){
-      _getCustomers();
+      getCustomers();
       widget.childUpdate =false;
     }
-    SourceData sourceData = SourceData(context, _pageEntity, _getCustomers);
+    SourceData sourceData = SourceData(context, _pageEntity, getCustomers);
 
     var paginatedDataTable = PaginatedDataTable2(
       key: widget.pageKey,
@@ -159,7 +159,7 @@ class SourceData extends DataTableSource {
     }
     if (item == null) return null;
     var useTime;
-    if (item.useTime != 0) {
+    if (item.purchased == 0) {
       useTime = DateTime.fromMillisecondsSinceEpoch(item.endTime);
       useTime = "${useTime.year}-${useTime.month}-${useTime.day}";
     } else {
@@ -179,7 +179,9 @@ class SourceData extends DataTableSource {
             children: [
               IconButton(
                   onPressed: () {
-                    updateCustomerDialog(context, item!, false).then((value) => refresh());
+                    updateCustomerDialog(context, item!, false).then((value) => {
+                      updateRefresh()
+                    });
                   },
                   icon: const Icon(Icons.edit)),
               IconButton(
@@ -192,7 +194,9 @@ class SourceData extends DataTableSource {
           placeholder: true)
     ]);
   }
-
+  void updateRefresh()async{
+    await refresh();
+  }
   void deleteCustomer(String id) async {
     var response = await HttpUtils.get("/v1/deleteCustomer?id=$id", null);
     refresh();

@@ -113,6 +113,8 @@ class _EditDialog extends State<EditDialog> {
     widget.customer.remark1 = tecRemark1.text;
     widget.customer.remark2 = tecRemark2.text;
     widget.customer.purchased = widget.purchased ? 1 : 0;
+
+    developer.log("是否已经转正=${widget.purchased},${widget.customer.purchased}");
     developer.log("${widget.customer.useTime}-${widget.customer.endTime}");
     // if (tecUseTime.text.isNotEmpty) {
     //   widget.customer.useTime = tecUseTime.text.trim() as int;
