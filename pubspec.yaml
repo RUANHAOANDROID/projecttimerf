@@ -43,4 +43,5 @@ flutter:
       fonts:
         - asset: fonts/SourceHanSansCN-Regular.ttf
           style: normal
-
+  assets:
+    - assets/config.json

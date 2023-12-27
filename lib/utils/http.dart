@@ -1,17 +1,18 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:ptf/config.dart';
 import '../constants.dart';
 import 'dart:developer';
 class HttpUtils {
   static Dio? dio;
-
+  static var url;
   /// 生成Dio实例
   static Dio getInstance() {
     if (dio == null) {
       //通过传递一个 `BaseOptions`来创建dio实例
       var options = BaseOptions(
-          baseUrl: BASE_URL,
+          baseUrl: url,
           connectTimeout: CONNECT_TIMEOUT,
           receiveTimeout: RECEIVE_TIMEOUT,
           headers: {
@@ -34,9 +35,14 @@ class HttpUtils {
     data = data ?? {};
     method = method ?? "get";
     // 打印请求相关信息：请求地址、请求方式、请求参数
-    log("------Dio Request-----\n$method\t$BASE_URL\t$path\n"
+    log("------Dio Request-----\n$method\t$url\t$path\n"
         "${jsonEncode(data)}");
-
+    if(url == null ){
+      var config =await loadConfig();
+      log("request config ${config}");
+      url =config['address'];
+    }
+    log("request ${url}");
     var dio = getInstance();
     var resp;
     if (method == "get") {
@@ -53,7 +59,6 @@ class HttpUtils {
         "${jsonEncode(resp)}");
     return resp;
   }
-
   /// get
   static Future<Map<String, dynamic>> get(path, data) =>
       request(path, data: data);
