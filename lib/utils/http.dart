@@ -4,10 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:ptf/config.dart';
 import 'package:ptf/main.dart';
 import '../constants.dart';
-import 'dart:developer';
+
 class HttpUtils {
   static Dio? dio;
   static var url;
+
   /// 生成Dio实例
   static Dio getInstance() {
     if (dio == null) {
@@ -17,7 +18,7 @@ class HttpUtils {
           connectTimeout: CONNECT_TIMEOUT,
           receiveTimeout: RECEIVE_TIMEOUT,
           headers: {
-            'Content-Type':'application/json',
+            'Content-Type': 'application/json',
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "*",
             "Access-Control-Expose-Headers":
@@ -38,10 +39,10 @@ class HttpUtils {
     // 打印请求相关信息：请求地址、请求方式、请求参数
     logger.d("------Dio Request-----\n$method\t$url\t$path\n"
         "${jsonEncode(data)}");
-    if(url == null ){
-      var config =await loadConfig();
+    if (url == null) {
+      var config = await loadConfig();
       logger.d("request config $config");
-      url =config['address'];
+      url = config['address'];
     }
     var dio = getInstance();
     var resp;
@@ -58,6 +59,7 @@ class HttpUtils {
     logger.d(resp);
     return resp;
   }
+
   /// get
   static Future<Map<String, dynamic>> get(path, data) =>
       request(path, data: data);

@@ -21,11 +21,11 @@ class _LoginPageState extends State<LoginScreen> {
   String pwd = '';
 
   void toMain() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen(title: '周期管理系统',)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
     Navigator.pop(context);
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) =>MainScreen(title: '周期管理系统',)),
+      MaterialPageRoute(builder: (context) =>MainScreen()),
       (route) => route == null,
     );
   }

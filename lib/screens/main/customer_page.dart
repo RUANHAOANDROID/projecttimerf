@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ptf/models/customer_page_entity.dart';
 import 'package:ptf/models/response.dart';
 import 'package:ptf/net/http.dart';
@@ -9,16 +10,19 @@ import 'package:ptf/net/http.dart';
 import '../../main.dart';
 import '../../models/customer_entity.dart';
 import '../../utils/http.dart';
+import '../../wiidget/mytoast.dart';
 import 'edit_dialog.dart';
 
 class CustomerPage extends StatefulWidget {
   GlobalKey<PaginatedDataTable2State> pageKey;
 
-  bool childUpdate;//父控件根据该值改变子控件状态
+  bool childUpdate; //父控件根据该值改变子控件状态
 
-  CustomerPage({super.key, required this.pageKey,required this.childUpdate});
+  CustomerPage({super.key, required this.pageKey, required this.childUpdate});
 
   //final _key = GlobalKey<PaginatedDataTable2State>();
+  final List<String> brandItems = List.empty(growable: true);
+  final String brandSelected = "品牌";
 
   @override
   State<StatefulWidget> createState() => _PaginatedPageState();
@@ -52,6 +56,8 @@ class _PaginatedPageState extends State<CustomerPage> {
   void initState() {
     getCustomers();
     logger.d("customer initState");
+    // widget.brandItems.add("海信");
+    // widget.brandItems.add("海石");
     super.initState();
   }
 
@@ -63,17 +69,143 @@ class _PaginatedPageState extends State<CustomerPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = false;
     logger.d("customer_page initState");
-    if(widget.childUpdate){
+    if (widget.childUpdate) {
       getCustomers();
-      widget.childUpdate =false;
+      widget.childUpdate = false;
     }
-    SourceData sourceData = SourceData(context, _pageEntity, getCustomers);
+    _resetFilter() {
+      FToast()
+          .init(context)
+          .showToast(child: const MyToast(tip: "已重置过滤条件", ok: true));
+    }
 
+    SourceData sourceData = SourceData(context, _pageEntity, getCustomers);
+    var searchAnchor = SearchAnchor(
+        builder: (BuildContext context, SearchController controller) {
+      return SearchBar(
+        controller: controller,
+        padding: const MaterialStatePropertyAll<EdgeInsets>(
+            EdgeInsets.symmetric(horizontal: 16.0)),
+        onTap: () {
+          controller.openView();
+        },
+        onChanged: (_) {
+          controller.openView();
+        },
+        leading: const Icon(Icons.search),
+        trailing: <Widget>[
+          Tooltip(
+            message: 'Change brightness mode',
+            child: IconButton(
+              isSelected: isDark,
+              onPressed: () {
+                setState(() {
+                  isDark = !isDark;
+                });
+              },
+              icon: const Icon(Icons.wb_sunny_outlined),
+              selectedIcon: const Icon(Icons.brightness_2_outlined),
+            ),
+          )
+        ],
+      );
+    }, suggestionsBuilder: (BuildContext context, SearchController controller) {
+      return List<ListTile>.generate(5, (int index) {
+        final String item = 'item $index';
+        return ListTile(
+          title: Text(item),
+          onTap: () {
+            setState(() {
+              controller.closeView(item);
+            });
+          },
+        );
+      });
+    });
+    var titleActions = [
+      searchAnchor,
+      TextButton.icon(
+        icon: Icon(Icons.refresh),
+        label: Text("重置过滤条件"),
+        onPressed: () {
+          _resetFilter();
+        },
+      ),
+
+      TextButton.icon(
+        icon: Icon(Icons.notifications),
+        label: Text("消息（${3}）"),
+        onPressed: () {
+          // Navigator.of(context);
+        },
+      ),
+    ];
+
+    Widget brandDropdownMenu() {
+      if (widget.brandItems.isEmpty) {
+        return TextButton(
+          child: Text("品牌"),
+          onPressed: () async {
+            FToast()
+                .init(context)
+                .showToast(child: const MyToast(tip: "没有更多品牌", ok: false));
+          },
+        );
+      }
+      return DropdownButton<String>(
+        value: widget.brandSelected,
+        icon: const Icon(
+          Icons.arrow_drop_down,
+          color: Colors.blue,
+        ),
+        //elevation: 16,
+        style: const TextStyle(color: Colors.blue),
+        underline: Container(
+          height: 0,
+          color: Colors.white12,
+        ),
+        onChanged: (String? value) {
+          setState(() {
+            // widget.brandSelected = "$value";
+          });
+        },
+        items: widget.brandItems.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      );
+    }
+
+    var titles = [
+      DataColumn2(label: Text("序号"), fixedWidth: 50),
+      DataColumn2(label: Text("项目")),
+      DataColumn2(label: brandDropdownMenu()),
+      DataColumn2(label: Text("版本"), fixedWidth: 100),
+      DataColumn2(label: Text("注册数量"), fixedWidth: 80),
+      // DataColumn2(label: Text("POS")),
+      // DataColumn2(label: Text("后台")),
+      // DataColumn2(label: Text("自助")),
+      // DataColumn2(label: Text("其他")),
+      DataColumn2(
+          label: Text("到期时间"),
+          onSort: (columnIndex, ascending) {},
+          fixedWidth: 100),
+      DataColumn2(label: Text('业务员'), fixedWidth: 100),
+      DataColumn2(label: Text('技术员'), fixedWidth: 100),
+      DataColumn2(label: Text('备注')),
+      DataColumn2(label: Text('备用1')),
+      DataColumn2(label: Text('备用2')),
+      DataColumn2(label: Text('操作')),
+    ];
     var paginatedDataTable = PaginatedDataTable2(
       key: widget.pageKey,
       source: sourceData,
-      // header: Text('事件'),
+      header: Text('项目周期管理'),
+      actions: titleActions,
       headingRowHeight: 50.0,
       dataRowHeight: 60.0,
       rowsPerPage: _rowsPerPage,
@@ -86,24 +218,9 @@ class _PaginatedPageState extends State<CustomerPage> {
         debugPrint("onRowsPerPageChanged:$value");
         _rowsPerPage = value!;
       },
+      sortColumnIndex: 1,
       sortAscending: true,
-      columns: const [
-        DataColumn2(label: Text("序号")),
-        DataColumn2(label: Text("项目")),
-        DataColumn2(label: Text("品牌")),
-        DataColumn2(label: Text("版本")),
-        DataColumn2(label: Text("POS")),
-        DataColumn2(label: Text("后台")),
-        DataColumn2(label: Text("自助")),
-        DataColumn2(label: Text("其他")),
-        DataColumn2(label: Text('到期时间')),
-        DataColumn2(label: Text('业务员')),
-        DataColumn2(label: Text('技术员')),
-        DataColumn2(label: Text('备注')),
-        DataColumn2(label: Text('备用1')),
-        DataColumn2(label: Text('备用2')),
-        DataColumn2(label: Text('操作')),
-      ],
+      columns: titles,
       empty: const Center(child: Text('暂无数据')),
       showFirstLastButtons: true,
       initialFirstRowIndex: 0,
@@ -181,10 +298,13 @@ class SourceData extends DataTableSource {
       DataCell(Text("${item?.name}"), placeholder: true),
       DataCell(Text("${item?.brand}"), placeholder: true),
       DataCell(Text("${item?.version}"), placeholder: true),
-      DataCell(Text("${item?.pos}"), placeholder: true),
-      DataCell(Text("${item?.server}"), placeholder: true),
-      DataCell(Text("${item?.posDroid}"), placeholder: true),
-      DataCell(Text("${item?.other}"), placeholder: true),
+      DataCell(Text("共${item.pos + item.server + item.posDroid + item.other}"),
+          placeholder: true),
+
+      // DataCell(Text("${item?.pos}"), placeholder: true),
+      // DataCell(Text("${item?.server}"), placeholder: true),
+      // DataCell(Text("${item?.posDroid}"), placeholder: true),
+      // DataCell(Text("${item?.other}"), placeholder: true),
       DataCell(Text(useTime), placeholder: true),
       DataCell(Text("${item?.salesman}"), placeholder: true),
       DataCell(Text("${item?.technician}"), placeholder: true),
@@ -196,9 +316,8 @@ class SourceData extends DataTableSource {
             children: [
               IconButton(
                   onPressed: () {
-                    updateCustomerDialog(context, item!, false).then((value) => {
-                      updateRefresh()
-                    });
+                    updateCustomerDialog(context, item!, false)
+                        .then((value) => {updateRefresh()});
                   },
                   icon: const Icon(Icons.edit)),
               IconButton(
@@ -211,9 +330,11 @@ class SourceData extends DataTableSource {
           placeholder: true)
     ]);
   }
-  void updateRefresh()async{
+
+  void updateRefresh() async {
     await refresh();
   }
+
   void deleteCustomer(String id) async {
     var response = await HttpUtils.get("/v1/deleteCustomer?id=$id", null);
     refresh();
