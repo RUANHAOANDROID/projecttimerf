@@ -20,8 +20,8 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       theme: ThemeLight(context),
-      // home: MainScreen(title: "项目试用期管理"),
-      home: LoginScreen(),
+       home: MainScreen(title: "项目试用期管理"),
+      //home: LoginScreen(),
     );
   }
 }

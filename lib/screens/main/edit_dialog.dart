@@ -197,10 +197,7 @@ class _EditDialog extends State<EditDialog> {
     );
 
     var addressWidget = Padding(
-      padding: EdgeInsets.only(
-          left: defaultPadding / 2,
-          right: defaultPadding / 2,
-          top: defaultPadding / 8),
+      padding: leftRightTop,
       child: TextFormField(
         controller: tecAddress,
         validator: (value) {
@@ -218,7 +215,7 @@ class _EditDialog extends State<EditDialog> {
       ),
     );
     var brandWidget = Padding(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
           left: defaultPadding / 2,
           right: defaultPadding / 2,
           top: defaultPadding),
@@ -236,7 +233,7 @@ class _EditDialog extends State<EditDialog> {
       ),
     );
     var versionWidget = Padding(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
           left: defaultPadding / 2,
           right: defaultPadding / 2,
           top: defaultPadding),
@@ -301,7 +298,7 @@ class _EditDialog extends State<EditDialog> {
         },
         decoration: InputDecoration(
             suffixIcon: TextButton.icon(
-              label: const Text("选择日期"),
+              label: const Text(""),
               icon: Icon(Icons.timer),
               onPressed: () {
                 _showDatePicker(true);
@@ -327,7 +324,7 @@ class _EditDialog extends State<EditDialog> {
         },
         decoration: InputDecoration(
             suffixIcon: TextButton.icon(
-              label: const Text("选择日期"),
+              label: const Text(""),
               icon: const Icon(Icons.timer),
               onPressed: () {
                 _showDatePicker(false);
@@ -343,7 +340,7 @@ class _EditDialog extends State<EditDialog> {
     return AlertDialog(
       title: const Text('完善客户信息'),
       content: Container(
-        width: 600,
+        width: 700,
         child: Form(
           key: widget._formKey,
           child: SingleChildScrollView(
@@ -352,50 +349,50 @@ class _EditDialog extends State<EditDialog> {
                 Row(
                   children: [
                     SizedBox(
-                      height: 80,
-                      width: 200,
+                      width: 120,
                       child: nameWidget,
                     ),
                     SizedBox(
-                      height: 80,
-                      width: 400,
+                      width: 180,
                       child: telWidget,
+                    ),
+                    SizedBox(
+                      width: 400,
+                      child: addressWidget,
                     )
                   ],
                 ),
-                addressWidget,
                 Row(
                   children: [
                     SizedBox(
-                      height: 80,
-                      width: 300,
+                      width: 120,
                       child: brandWidget,
                     ),
                     SizedBox(
-                      height: 80,
-                      width: 300,
+                      width: 120,
                       child: versionWidget,
                     )
                   ],
                 ),
                 remark1Widget,
                 remark2Widget,
-                checkboxListTile,
-                if (!widget.purchased)
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: 80,
-                        width: 300,
-                        child: startTimeWidget,
-                      ),
-                      SizedBox(
-                        height: 80,
-                        width: 300,
-                        child: endTimeWidget,
-                      )
-                    ],
-                  ),
+                Row(children: [
+                  SizedBox(width: 200,child: checkboxListTile,),
+                  if (!widget.purchased)
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 200,
+                          child: startTimeWidget,
+                        ),
+                        SizedBox(
+                          width: 200,
+                          child: endTimeWidget,
+                        )
+                      ],
+                    ),
+                ],),
+
               ],
             ),
           ),
