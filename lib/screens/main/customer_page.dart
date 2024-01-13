@@ -6,6 +6,7 @@ import 'package:ptf/models/customer_page_entity.dart';
 import 'package:ptf/models/response.dart';
 import 'package:ptf/net/http.dart';
 
+import '../../main.dart';
 import '../../models/customer_entity.dart';
 import '../../utils/http.dart';
 import 'edit_dialog.dart';
@@ -30,7 +31,7 @@ class _PaginatedPageState extends State<CustomerPage> {
 
   //下一页
   getCustomers({int rowIndex = 0}) async {
-    log("getCustomers ------");
+    logger.d("getCustomers ------");
     var body = '{"offset":$rowIndex,"limit":$_rowsPerPage}';
     var response = await HttpManager.getCustomers(body);
     var respBody = BasicResponse.fromJson(response);
@@ -50,7 +51,7 @@ class _PaginatedPageState extends State<CustomerPage> {
   @override
   void initState() {
     getCustomers();
-    log("customer initState");
+    logger.d("customer initState");
     super.initState();
   }
 
@@ -62,7 +63,7 @@ class _PaginatedPageState extends State<CustomerPage> {
 
   @override
   Widget build(BuildContext context) {
-    log("customer_page initState");
+    logger.d("customer_page initState");
     if(widget.childUpdate){
       getCustomers();
       widget.childUpdate =false;
@@ -173,7 +174,7 @@ class SourceData extends DataTableSource {
       useTime = "已转正";
     }
 
-    log("UseTime=${item.endTime}");
+    logger.d("UseTime=${item.endTime}");
     return DataRow(cells: [
       DataCell(Text("${item?.id}"), placeholder: true),
       // DataCell(Text("${item?.name}\n${item?.brand}\n${item?.version}"), placeholder: true),

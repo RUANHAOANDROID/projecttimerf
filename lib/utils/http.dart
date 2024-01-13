@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:ptf/config.dart';
+import 'package:ptf/main.dart';
 import '../constants.dart';
 import 'dart:developer';
 class HttpUtils {
@@ -35,14 +36,14 @@ class HttpUtils {
     data = data ?? {};
     method = method ?? "get";
     // 打印请求相关信息：请求地址、请求方式、请求参数
-    log("------Dio Request-----\n$method\t$url\t$path\n"
+    logger.d("------Dio Request-----\n$method\t$url\t$path\n"
         "${jsonEncode(data)}");
     if(url == null ){
       var config =await loadConfig();
-      log("request config ${config}");
+      logger.d("request config $config");
       url =config['address'];
     }
-    log("request ${url}");
+    logger.d("request ${url}");
     var dio = getInstance();
     var resp;
     if (method == "get") {
@@ -55,8 +56,7 @@ class HttpUtils {
       resp = response.data;
     }
     //debugger(message: "response");
-    log("------Dio Response-----\n"
-        "${jsonEncode(resp)}");
+    logger.d(resp);
     return resp;
   }
   /// get

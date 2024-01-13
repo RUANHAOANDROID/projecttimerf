@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:ptf/main.dart';
 
 import '../../../../constants.dart';
 import '../../../../responsive.dart';
@@ -9,10 +10,14 @@ import '../../../../utils/http.dart';
 import 'dart:developer' as developer;
 
 import '../../models/customer_entity.dart';
+import 'package:logger/logger.dart';
+
+
 
 class EditDialog extends StatefulWidget {
   final bool isCreate;
   Customer customer;
+
   var purchased = false;
   final _formKey = GlobalKey<FormState>();
 
@@ -27,7 +32,7 @@ class _EditDialog extends State<EditDialog> {
   Future<bool> addCustomer() async {
     try {
       var state = widget._formKey.currentState;
-      developer.log("addCustomer");
+      logger.d("addCustomer");
       if (state!.validate()) {
         setCustomer();
         var body = widget.customer;
@@ -38,7 +43,7 @@ class _EditDialog extends State<EditDialog> {
       }
       return true;
     } catch (e) {
-      developer.log("_EditDialog", error: e);
+      logger.d("_EditDialog", error: e);
       return false;
     }
   }
@@ -46,7 +51,7 @@ class _EditDialog extends State<EditDialog> {
   Future<bool> updateDevice() async {
     try {
       var state = widget._formKey.currentState;
-      developer.log("updateDevice");
+      logger.d("updateDevice");
       if (state!.validate()) {
         setCustomer();
         var body = widget.customer;
@@ -57,7 +62,7 @@ class _EditDialog extends State<EditDialog> {
       }
       return true;
     } catch (e) {
-      developer.log("err", error: e);
+      logger.e(e);
       return false;
     }
   }
@@ -90,20 +95,19 @@ class _EditDialog extends State<EditDialog> {
   @override
   void initState() {
     if (!widget.isCreate) {
-      tecName.text = widget.customer?.name as String;
-      tecBrand.text = widget.customer?.brand as String;
-      tecVersion.text = widget.customer?.version as String;
-      tecPosCount.text = widget.customer.pos as String;
-      tecServerCount.text = widget.customer.server as String;
-      tecPosDroidCount.text = widget.customer.posDroid as String;
-      tecOtherCount.text = widget.customer.other as String;
-
+      //developer.debugger(message: "a");
+      tecName.text = widget.customer.name;
+      tecBrand.text = widget.customer.brand;
+      tecVersion.text = widget.customer.version;
+      tecPosCount.text = "${widget.customer.pos}";
+      tecServerCount.text = "${widget.customer.server}";
+      tecPosDroidCount.text = "${widget.customer.posDroid}";
+      tecOtherCount.text = "${widget.customer.other}";
       tecSalesman.text = widget.customer.salesman;
       tecTechnician.text = widget.customer.technician;
-
+      tecRemark.text = widget.customer.remark;
       tecC1.text = widget.customer.customize1;
       tecC2.text = widget.customer.customize2;
-
       widget.purchased = (widget.customer.purchased == 1);
       if (widget.customer.useTime != 0) {
         var useTime =
@@ -129,12 +133,13 @@ class _EditDialog extends State<EditDialog> {
     widget.customer.other = int.parse(tecOtherCount.text);
     widget.customer.salesman = tecSalesman.text;
     widget.customer.technician = tecTechnician.text;
+    widget.customer.remark = tecRemark.text;
     widget.customer.customize1 = tecC1.text;
     widget.customer.customize2 = tecC2.text;
     widget.customer.purchased = widget.purchased ? 1 : 0;
 
-    developer.log("是否已经转正=${widget.purchased},${widget.customer.purchased}");
-    developer.log("${widget.customer.useTime}-${widget.customer.endTime}");
+    logger.d("是否已经转正=${widget.purchased},${widget.customer.purchased}");
+    logger.d("${widget.customer.useTime}-${widget.customer.endTime}");
     // if (tecUseTime.text.isNotEmpty) {
     //   widget.customer.useTime = tecUseTime.text.trim() as int;
     // }
@@ -153,10 +158,10 @@ class _EditDialog extends State<EditDialog> {
         .then((value) {
       if (value != null) {
         if (isStart) {
-          widget.customer?.useTime = value.millisecondsSinceEpoch;
+          widget.customer.useTime = value.millisecondsSinceEpoch;
           tecUseTime.text = "${value.year}-${value.month}-${value.day}";
         } else {
-          widget.customer?.endTime = value.millisecondsSinceEpoch;
+          widget.customer.endTime = value.millisecondsSinceEpoch;
           tecEndTime.text = "${value.year}-${value.month}-${value.day}";
         }
       }
@@ -408,7 +413,7 @@ class _EditDialog extends State<EditDialog> {
         decoration: InputDecoration(
             suffixIcon: TextButton.icon(
               label: const Text(""),
-              icon: Icon(Icons.timer),
+              icon: const Icon(Icons.timer),
               onPressed: () {
                 _showDatePicker(true);
               },
@@ -599,7 +604,7 @@ class _EditDialog extends State<EditDialog> {
           onPressed: () async {
             if (!widget.isCreate) {
               bool isOK = await updateDevice();
-              developer.log(isOK.toString());
+              logger.d("$isOK ");
             } else {
               bool isOK = await addCustomer();
               developer.log(isOK.toString());

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ptf/screens/main/customer_page.dart';
 
 import '../../constants.dart';
+import '../../main.dart';
 import '../../models/customer_entity.dart';
 import 'edit_dialog.dart';
 import 'dart:developer';
@@ -21,14 +22,14 @@ class _MyHomePageState extends State<MainScreen> {
   final _key = GlobalKey<PaginatedDataTable2State>();
   onRefresh() {
     setState(() {
-      log("on refresh");
+      logger.d("on refresh");
       _key.currentState?.pageTo(0);
       widget.childUpdate=true;
     });
   }
   @override
   Widget build(BuildContext context) {
-    log("main_screen on build");
+    logger.d("main_screen on build");
     var customerPage = CustomerPage(pageKey: _key,childUpdate: widget.childUpdate);
     return Scaffold(
       appBar: AppBar(
