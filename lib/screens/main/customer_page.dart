@@ -87,13 +87,20 @@ class _PaginatedPageState extends State<CustomerPage> {
       },
       sortAscending: true,
       columns: const [
-        DataColumn2(
-          label: Text("用户"),
-        ),
+        DataColumn2(label: Text("序号")),
+        DataColumn2(label: Text("项目")),
         DataColumn2(label: Text("品牌")),
         DataColumn2(label: Text("版本")),
+        DataColumn2(label: Text("POS")),
+        DataColumn2(label: Text("后台")),
+        DataColumn2(label: Text("自助")),
+        DataColumn2(label: Text("其他")),
         DataColumn2(label: Text('到期时间')),
+        DataColumn2(label: Text('业务员')),
+        DataColumn2(label: Text('技术员')),
         DataColumn2(label: Text('备注')),
+        DataColumn2(label: Text('备用1')),
+        DataColumn2(label: Text('备用2')),
         DataColumn2(label: Text('操作')),
       ],
       empty: const Center(child: Text('暂无数据')),
@@ -168,12 +175,21 @@ class SourceData extends DataTableSource {
 
     log("UseTime=${item.endTime}");
     return DataRow(cells: [
-      DataCell(Text("${item?.name}\n${item?.phone}\n${item?.address}"),
-          placeholder: true),
+      DataCell(Text("${item?.id}"), placeholder: true),
+      // DataCell(Text("${item?.name}\n${item?.brand}\n${item?.version}"), placeholder: true),
+      DataCell(Text("${item?.name}"), placeholder: true),
       DataCell(Text("${item?.brand}"), placeholder: true),
       DataCell(Text("${item?.version}"), placeholder: true),
+      DataCell(Text("${item?.pos}"), placeholder: true),
+      DataCell(Text("${item?.server}"), placeholder: true),
+      DataCell(Text("${item?.posDroid}"), placeholder: true),
+      DataCell(Text("${item?.other}"), placeholder: true),
       DataCell(Text(useTime), placeholder: true),
-      DataCell(Text("${item?.remark1}"), placeholder: true),
+      DataCell(Text("${item?.salesman}"), placeholder: true),
+      DataCell(Text("${item?.technician}"), placeholder: true),
+      DataCell(Text("${item?.remark}"), placeholder: true),
+      DataCell(Text("${item?.customize1}"), placeholder: true),
+      DataCell(Text("${item?.customize2}"), placeholder: true),
       DataCell(
           Row(
             children: [
