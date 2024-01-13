@@ -43,7 +43,6 @@ class HttpUtils {
       logger.d("request config $config");
       url =config['address'];
     }
-    logger.d("request ${url}");
     var dio = getInstance();
     var resp;
     if (method == "get") {
