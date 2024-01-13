@@ -62,25 +62,25 @@ class _EditDialog extends State<EditDialog> {
     }
   }
 
-  TextEditingController tecName = TextEditingController();//项目名称
-  TextEditingController tecBrand = TextEditingController();//品牌
-  TextEditingController tecVersion = TextEditingController();//版本
+  TextEditingController tecName = TextEditingController(); //项目名称
+  TextEditingController tecBrand = TextEditingController(); //品牌
+  TextEditingController tecVersion = TextEditingController(); //版本
 
-  TextEditingController tecPosCount = TextEditingController();//Pos数
-  TextEditingController tecServerCount = TextEditingController();//服务数
-  TextEditingController tecPosDroidCount = TextEditingController();//自助数
-  TextEditingController tecOtherDroidCount = TextEditingController();//其他设备数
+  TextEditingController tecPosCount = TextEditingController(); //Pos数
+  TextEditingController tecServerCount = TextEditingController(); //服务数
+  TextEditingController tecPosDroidCount = TextEditingController(); //自助数
+  TextEditingController tecOtherCount = TextEditingController(); //其他设备数
 
-  TextEditingController tecUseTime = TextEditingController();//开始时间
-  TextEditingController tecEndTime = TextEditingController();//结束时间
+  TextEditingController tecUseTime = TextEditingController(); //开始时间
+  TextEditingController tecEndTime = TextEditingController(); //结束时间
 
-  TextEditingController tecSalesman = TextEditingController();//业务员
-  TextEditingController tecTechnician = TextEditingController();//技术员
+  TextEditingController tecSalesman = TextEditingController(); //业务员
+  TextEditingController tecTechnician = TextEditingController(); //技术员
 
-  TextEditingController tecC1 = TextEditingController();//自定义列1
-  TextEditingController tecC2 = TextEditingController();//自定义列2
+  TextEditingController tecC1 = TextEditingController(); //自定义列1
+  TextEditingController tecC2 = TextEditingController(); //自定义列2
 
-  TextEditingController tecRemark = TextEditingController();//备注
+  TextEditingController tecRemark = TextEditingController(); //备注
   void checkParameter() {
     var state = widget._formKey.currentState;
     if (state!.validate()) {
@@ -93,16 +93,16 @@ class _EditDialog extends State<EditDialog> {
       tecName.text = widget.customer?.name as String;
       tecBrand.text = widget.customer?.brand as String;
       tecVersion.text = widget.customer?.version as String;
-      tecPosCount.text =widget.customer.pos as String;
-      tecServerCount.text =widget.customer.server as String;
-      tecPosDroidCount.text =widget.customer.posDroid as String;
-      tecOtherDroidCount.text =widget.customer.other as String;
+      tecPosCount.text = widget.customer.pos as String;
+      tecServerCount.text = widget.customer.server as String;
+      tecPosDroidCount.text = widget.customer.posDroid as String;
+      tecOtherCount.text = widget.customer.other as String;
 
-      tecSalesman.text =widget.customer.salesman;
-      tecTechnician.text =widget.customer.technician;
+      tecSalesman.text = widget.customer.salesman;
+      tecTechnician.text = widget.customer.technician;
 
-      tecC1.text =widget.customer.customize1;
-      tecC2.text =widget.customer.customize2;
+      tecC1.text = widget.customer.customize1;
+      tecC2.text = widget.customer.customize2;
 
       widget.purchased = (widget.customer.purchased == 1);
       if (widget.customer.useTime != 0) {
@@ -126,7 +126,7 @@ class _EditDialog extends State<EditDialog> {
     widget.customer.pos = int.parse(tecPosCount.text);
     widget.customer.server = int.parse(tecServerCount.text);
     widget.customer.posDroid = int.parse(tecPosDroidCount.text);
-    widget.customer.other = int.parse(tecOtherDroidCount.text);
+    widget.customer.other = int.parse(tecOtherCount.text);
     widget.customer.salesman = tecSalesman.text;
     widget.customer.technician = tecTechnician.text;
     widget.customer.customize1 = tecC1.text;
@@ -171,7 +171,7 @@ class _EditDialog extends State<EditDialog> {
     tecPosCount.dispose();
     tecServerCount.dispose();
     tecPosDroidCount.dispose();
-    tecOtherDroidCount.dispose();
+    tecOtherCount.dispose();
     tecSalesman.dispose();
     tecTechnician.dispose();
     tecC1.dispose();
@@ -200,43 +200,6 @@ class _EditDialog extends State<EditDialog> {
             // hintStyle: formTextStyle(context),
             labelText: '项目名称',
             hintText: '项目名称'),
-      ),
-    );
-    var posCountWidget = Padding(
-      padding: leftRightTop,
-      child: TextFormField(
-        controller: tecPosCount,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Pos数量未填写';
-          }
-          return null;
-        },
-        decoration: const InputDecoration(
-            border: outlineInputBorder,
-            labelText: 'POS数量',
-            // labelStyle: formTextStyle(context),
-            // hintStyle: formTextStyle(context),
-            hintText: 'POS数量'),
-      ),
-    );
-
-    var posDroidCountWidget = Padding(
-      padding: leftRightTop,
-      child: TextFormField(
-        controller: tecPosDroidCount,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return '自助机数量为空';
-          }
-          return null;
-        },
-        decoration: const InputDecoration(
-            border: outlineInputBorder,
-            // hintStyle: formTextStyle(context),
-            labelText: '自助机数量',
-            // labelStyle: formTextStyle(context),
-            hintText: '自助机数量'),
       ),
     );
     var brandWidget = Padding(
@@ -276,6 +239,116 @@ class _EditDialog extends State<EditDialog> {
       ),
     );
 
+    var posCountWidget = Padding(
+      padding: leftRightTop,
+      child: TextFormField(
+        controller: tecPosCount,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Pos数量未填写';
+          }
+          return null;
+        },
+        decoration: const InputDecoration(
+            border: outlineInputBorder,
+            labelText: 'POS',
+            // labelStyle: formTextStyle(context),
+            // hintStyle: formTextStyle(context),
+            hintText: 'POS'),
+      ),
+    );
+    var serverCountWidget = Padding(
+      padding: leftRightTop,
+      child: TextFormField(
+        controller: tecServerCount,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '后台数未填写';
+          }
+          return null;
+        },
+        decoration: const InputDecoration(
+            border: outlineInputBorder,
+            labelText: '后台',
+            // labelStyle: formTextStyle(context),
+            // hintStyle: formTextStyle(context),
+            hintText: '后台'),
+      ),
+    );
+
+    var posDroidCountWidget = Padding(
+      padding: leftRightTop,
+      child: TextFormField(
+        controller: tecPosDroidCount,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '自助机数量为空';
+          }
+          return null;
+        },
+        decoration: const InputDecoration(
+            border: outlineInputBorder,
+            // hintStyle: formTextStyle(context),
+            labelText: '自助机',
+            // labelStyle: formTextStyle(context),
+            hintText: '自助机'),
+      ),
+    );
+    var otherCountWidget = Padding(
+      padding: leftRightTop,
+      child: TextFormField(
+        controller: tecOtherCount,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '其他数量未填写';
+          }
+          return null;
+        },
+        decoration: const InputDecoration(
+            border: outlineInputBorder,
+            // hintStyle: formTextStyle(context),
+            labelText: '其他',
+            // labelStyle: formTextStyle(context),
+            hintText: '其他'),
+      ),
+    );
+    var salesmanWidget = Padding(
+      padding: leftRightTop,
+      child: TextFormField(
+        controller: tecSalesman,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '业务员未填写';
+          }
+          return null;
+        },
+        decoration: const InputDecoration(
+            border: outlineInputBorder,
+            // hintStyle: formTextStyle(context),
+            labelText: '业务员',
+            // labelStyle: formTextStyle(context),
+            hintText: '业务员'),
+      ),
+    );
+    var technicianWidget = Padding(
+      padding: leftRightTop,
+      child: TextFormField(
+        controller: tecTechnician,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '技术员未填写';
+          }
+          return null;
+        },
+        decoration: const InputDecoration(
+            border: outlineInputBorder,
+            // hintStyle: formTextStyle(context),
+            labelText: '技术员',
+            // labelStyle: formTextStyle(context),
+            hintText: '技术员'),
+      ),
+    );
+
     var c1Widget = Padding(
       padding: paddingAll,
       child: TextFormField(
@@ -283,9 +356,9 @@ class _EditDialog extends State<EditDialog> {
         decoration: const InputDecoration(
             border: outlineInputBorder,
             // hintStyle: formTextStyle(context),
-            labelText: '备注1',
+            labelText: '自定义列1',
             // labelStyle: formTextStyle(context),
-            hintText: '备注1'),
+            hintText: '自定义列1'),
       ),
     );
     var c2Widget = Padding(
@@ -295,12 +368,23 @@ class _EditDialog extends State<EditDialog> {
         decoration: const InputDecoration(
             border: outlineInputBorder,
             // hintStyle: formTextStyle(context),
-            labelText: '备注2',
+            labelText: '自定义列2',
             // labelStyle: formTextStyle(context),
-            hintText: '备注2'),
+            hintText: '自定义列2'),
       ),
     );
-
+    var remarkWidget = Padding(
+      padding: paddingAll,
+      child: TextFormField(
+        controller: tecRemark,
+        decoration: const InputDecoration(
+            border: outlineInputBorder,
+            // hintStyle: formTextStyle(context),
+            labelText: '备注',
+            // labelStyle: formTextStyle(context),
+            hintText: '备注'),
+      ),
+    );
     //事件类型
     var checkboxListTile = CheckboxListTile(
         title: const Text("是否已转正"),
@@ -365,12 +449,23 @@ class _EditDialog extends State<EditDialog> {
     return AlertDialog(
       title: const Text('完善客户信息'),
       content: Container(
-        width: 700,
+        width: 600,
         child: Form(
           key: widget._formKey,
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
+                const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: SizedBox(
+                        width: 120,
+                        child: Text("基本信息"),
+                      ),
+                    )
+                  ],
+                ),
                 Row(
                   children: [
                     SizedBox(
@@ -387,37 +482,95 @@ class _EditDialog extends State<EditDialog> {
                     )
                   ],
                 ),
+                const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: SizedBox(
+                        width: 120,
+                        child: Text("注册数量"),
+                      ),
+                    )
+                  ],
+                ),
                 Row(
                   children: [
                     SizedBox(
                       width: 120,
-                      child: brandWidget,
+                      child: posCountWidget,
                     ),
                     SizedBox(
                       width: 120,
-                      child: versionWidget,
+                      child: serverCountWidget,
+                    ),
+                    SizedBox(
+                      width: 120,
+                      child: posDroidCountWidget,
+                    ),
+                    SizedBox(
+                      width: 120,
+                      child: otherCountWidget,
                     )
                   ],
                 ),
+                const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: SizedBox(
+                        width: 120,
+                        child: Text("人员"),
+                      ),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      child: salesmanWidget,
+                    ),
+                    SizedBox(
+                      width: 150,
+                      child: technicianWidget,
+                    )
+                  ],
+                ),
+                const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: SizedBox(
+                        width: 120,
+                        child: Text("补充"),
+                      ),
+                    )
+                  ],
+                ),
+                remarkWidget,
                 c1Widget,
                 c2Widget,
-                Row(children: [
-                  SizedBox(width: 200,child: checkboxListTile,),
-                  if (!widget.purchased)
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 200,
-                          child: startTimeWidget,
-                        ),
-                        SizedBox(
-                          width: 200,
-                          child: endTimeWidget,
-                        )
-                      ],
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      child: checkboxListTile,
                     ),
-                ],),
-
+                    if (!widget.purchased)
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 200,
+                            child: startTimeWidget,
+                          ),
+                          SizedBox(
+                            width: 200,
+                            child: endTimeWidget,
+                          )
+                        ],
+                      ),
+                  ],
+                ),
               ],
             ),
           ),
