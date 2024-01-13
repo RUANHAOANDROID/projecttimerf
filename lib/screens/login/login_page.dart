@@ -4,8 +4,8 @@ import 'package:ptf/theme/theme.dart';
 import 'package:ptf/utils/http.dart';
 import 'package:ptf/wiidget/tip.dart';
 
-import '../constants.dart';
-import 'main_screen.dart';
+import '../../constants.dart';
+import '../main/main_screen.dart';
 
 
 class LoginScreen extends StatefulWidget {

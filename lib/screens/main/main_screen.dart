@@ -2,10 +2,10 @@ import 'dart:ui';
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
-import 'package:ptf/screens/customer_page.dart';
+import 'package:ptf/screens/main/customer_page.dart';
 
-import '../constants.dart';
-import '../models/customer_entity.dart';
+import '../../constants.dart';
+import '../../models/customer_entity.dart';
 import 'edit_dialog.dart';
 import 'dart:developer';
 

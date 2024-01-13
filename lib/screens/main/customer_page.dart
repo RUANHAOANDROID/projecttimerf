@@ -6,8 +6,8 @@ import 'package:ptf/models/customer_page_entity.dart';
 import 'package:ptf/models/response.dart';
 import 'package:ptf/net/http.dart';
 
-import '../models/customer_entity.dart';
-import '../utils/http.dart';
+import '../../models/customer_entity.dart';
+import '../../utils/http.dart';
 import 'edit_dialog.dart';
 
 class CustomerPage extends StatefulWidget {

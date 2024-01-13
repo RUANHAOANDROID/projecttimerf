@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../../../constants.dart';
-import '../../../responsive.dart';
-import '../../../theme/theme.dart';
-import '../../../utils/http.dart';
+import '../../../../constants.dart';
+import '../../../../responsive.dart';
+import '../../../../theme/theme.dart';
+import '../../../../utils/http.dart';
 import 'dart:developer' as developer;
 
-import '../models/customer_entity.dart';
+import '../../models/customer_entity.dart';
 
 class EditDialog extends StatefulWidget {
   final bool isCreate;
