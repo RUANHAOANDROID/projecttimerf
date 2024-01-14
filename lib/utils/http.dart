@@ -33,10 +33,9 @@ class HttpUtils {
 
   /// 请求api
   static Future<Map<String, dynamic>> request(String path,
-      {data, method}) async {
-    data = data ?? {};
+      {requestBody, method}) async {
+    requestBody = requestBody ?? {};
     method = method ?? "get";
-    // 打印请求相关信息：请求地址、请求方式、请求参数
     if (url == null) {
       var config = await loadConfig();
       url = config['address'];
@@ -49,19 +48,18 @@ class HttpUtils {
       resp = response.data;
     } else {
       // post
-      var response = await dio.post(path, data: data);
+      var response = await dio.post(path, data: requestBody);
       resp = response.data;
     }
-    //debugger(message: "response");
-    logger.d(" url= ${url}\n method=${method}\n request=${jsonEncode(data)}\n response↘ \n${jsonEncode(resp)}");
+    logger.i(" $url\n $method\n ${jsonEncode(requestBody)}\n ${jsonEncode(resp)}");
     return resp;
   }
 
   /// get
   static Future<Map<String, dynamic>> get(path, data) =>
-      request(path, data: data);
+      request(path, requestBody: data);
 
   /// post
   static Future<Map<String, dynamic>> post(path, data) =>
-      request(path, data: data, method: "post");
+      request(path, requestBody: data, method: "post");
 }
