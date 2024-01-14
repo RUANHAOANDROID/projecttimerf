@@ -37,11 +37,8 @@ class HttpUtils {
     data = data ?? {};
     method = method ?? "get";
     // 打印请求相关信息：请求地址、请求方式、请求参数
-    logger.d("------Dio Request-----\n$method\t$url\t$path\n"
-        "${jsonEncode(data)}");
     if (url == null) {
       var config = await loadConfig();
-      logger.d("request config $config");
       url = config['address'];
     }
     var dio = getInstance();
@@ -56,7 +53,7 @@ class HttpUtils {
       resp = response.data;
     }
     //debugger(message: "response");
-    logger.d(resp);
+    logger.d(" url= ${url}\n method=${method}\n request=${jsonEncode(data)}\n response↘ \n${jsonEncode(resp)}");
     return resp;
   }
 

@@ -31,13 +31,17 @@ class CustomerPage extends StatefulWidget {
 class _PaginatedPageState extends State<CustomerPage> {
   int _rowsPerPage = 10;
   int _currentIndex = 0;
+  String _brand ="ALL";
   CustomerPageData _pageEntity = CustomerPageData();
 
   //下一页
   getCustomers({int rowIndex = 0}) async {
-    logger.d("getCustomers ------");
-    var body = '{"offset":$rowIndex,"limit":$_rowsPerPage}';
-    var response = await HttpManager.getCustomers(body);
+    var requestBody = {
+      'brand': _brand,
+      'pageNo': rowIndex,
+      'limit': _rowsPerPage,
+    };
+    var response = await HttpManager.getCustomers(requestBody);
     var respBody = BasicResponse.fromJson(response);
     if (respBody.code == HttpManager.StatusSuccess) {
       setState(() {
@@ -55,7 +59,7 @@ class _PaginatedPageState extends State<CustomerPage> {
   @override
   void initState() {
     getCustomers();
-    logger.d("customer initState");
+    //logger.d("customer initState");
     // widget.brandItems.add("海信");
     // widget.brandItems.add("海石");
     super.initState();
@@ -70,7 +74,7 @@ class _PaginatedPageState extends State<CustomerPage> {
   @override
   Widget build(BuildContext context) {
     bool isDark = false;
-    logger.d("customer_page initState");
+    //logger.d("customer_page initState");
     if (widget.childUpdate) {
       getCustomers();
       widget.childUpdate = false;
@@ -291,7 +295,7 @@ class SourceData extends DataTableSource {
       useTime = "已转正";
     }
 
-    logger.d("UseTime=${item.endTime}");
+    //logger.d("UseTime=${item.endTime}");
     return DataRow(cells: [
       DataCell(Text("${item?.id}"), placeholder: true),
       // DataCell(Text("${item?.name}\n${item?.brand}\n${item?.version}"), placeholder: true),

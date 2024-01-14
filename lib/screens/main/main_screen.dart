@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    logger.d("main_screen on build");
+    //logger.d("main_screen on build");
     var center = Center(
         child: SizedBox(
             height: window.physicalSize.height * 1,
